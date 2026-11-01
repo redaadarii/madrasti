@@ -1,0 +1,20 @@
+{
+  "name": "@madrasti/shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Services partagés entre le web et le mobile : client API, types, requêtes TanStack Query, traductions, formatage.",
+  "exports": {
+    "./*": "./src/*.ts",
+    "./i18n/locales/*.json": "./src/i18n/locales/*.json"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:run": "vitest run",
+    "lint": "oxlint src"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5",
+    "i18next": ">=26"
+  }
+}

@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:madrasti-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+
+madrasti:
+  seed-demo-data: true
+  security:
+    login-per-minute: 1000
+    public-per-minute: 1000
+  # Jamais d'appel réel à l'API Claude pendant les tests, même si ANTHROPIC_API_KEY est défini.
+  translation:
+    api-key: ""
+  storage:
+    dir: ${java.io.tmpdir}/madrasti-test-uploads

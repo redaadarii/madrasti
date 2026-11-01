@@ -1,0 +1,95 @@
+spring:
+  application:
+    name: madrasti
+  profiles:
+    default: dev
+  threads:
+    virtual:
+      enabled: true
+  messages:
+    basename: messages
+    fallback-to-system-locale: false
+  web:
+    locale: fr
+    locale-resolver: accept-header
+  data:
+    redis:
+      host: ${MADRASTI_REDIS_HOST:localhost}
+      port: ${MADRASTI_REDIS_PORT:6379}
+      repositories:
+        enabled: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 40MB
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+madrasti:
+  security:
+    jwt-secret: ${MADRASTI_JWT_SECRET:change-me-this-is-a-dev-only-secret-of-at-least-32-bytes!!}
+    token-ttl: 8h
+    cookie-secure: ${MADRASTI_COOKIE_SECURE:false}
+    login-per-minute: ${MADRASTI_LOGIN_PER_MINUTE:10}
+    public-per-minute: ${MADRASTI_PUBLIC_PER_MINUTE:5}
+    # Application mobile : accès de 15 min, renouvelé sans ressaisie du mot de passe pendant 30 jours.
+    mobile-access-ttl: ${MADRASTI_MOBILE_ACCESS_TTL:15m}
+    refresh-ttl: ${MADRASTI_REFRESH_TTL:30d}
+  cors:
+    allowed-origins: ${MADRASTI_CORS_ORIGINS:http://localhost:5173}
+  live:
+    jitsi-base-url: ${MADRASTI_JITSI_URL:https://meet.jit.si}
+  translation:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${MADRASTI_TRANSLATION_MODEL:claude-opus-5-5}
+    effort: ${MADRASTI_TRANSLATION_EFFORT:low}
+    per-user-per-minute: ${MADRASTI_TRANSLATION_PER_MINUTE:20}
+  storage:
+    dir: ${MADRASTI_STORAGE_DIR:./data/uploads}
+  notifications:
+    # local : une seule instance ; redis : plusieurs instances derrière un répartiteur de charge.
+    relay: ${MADRASTI_NOTIFICATIONS_RELAY:local}
+    # Durée de vie d'un flux temps réel ; le navigateur se reconnecte seul (à réduire derrière un proxy qui coupe plus tôt).
+    stream-timeout: ${MADRASTI_STREAM_TIMEOUT:30m}
+  payments:
+    # simulated : paiement fictif (démonstration) ; stripe : Stripe Checkout ; cmi : CMI (3D Pay Hosting).
+    provider: ${MADRASTI_PAYMENTS_PROVIDER:simulated}
+    public-url: ${MADRASTI_PUBLIC_URL:http://localhost:5173}
+    currency: ${MADRASTI_PAYMENTS_CURRENCY:mad}
+    stripe:
+      secret-key: ${STRIPE_SECRET_KEY:}
+      api-base: https://api.stripe.com
+    cmi:
+      client-id: ${CMI_CLIENT_ID:}
+      store-key: ${CMI_STORE_KEY:}
+      # Environnement de test du CMI ; en production, l'URL communiquée par le CMI.
+      gateway-url: ${CMI_GATEWAY_URL:https://testpayment.cmi.co.ma/fim/est3Dgate}
+  sms:
+    provider: ${MADRASTI_SMS_PROVIDER:log}
+    absence-alerts: ${MADRASTI_SMS_ABSENCE_ALERTS:true}
+    twilio:
+      account-sid: ${TWILIO_ACCOUNT_SID:}
+      auth-token: ${TWILIO_AUTH_TOKEN:}
+      from: ${TWILIO_FROM:}
+
+management:
+  health:
+    redis:
+      enabled: ${MADRASTI_REDIS_HEALTH:false}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html

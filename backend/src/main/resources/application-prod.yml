@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: ${MADRASTI_DB_URL:jdbc:postgresql://localhost:5432/madrasti}
+    username: ${MADRASTI_DB_USER:madrasti}
+    password: ${MADRASTI_DB_PASSWORD:madrasti}
+
+server:
+  forward-headers-strategy: framework
+
+madrasti:
+  security:
+    cookie-secure: ${MADRASTI_COOKIE_SECURE:true}
+  seed-demo-data: ${MADRASTI_SEED:false}

@@ -1,0 +1,85 @@
+# Déploiement complet : docker compose -f docker-compose.prod.yml --env-file .env up -d --build
+name: madrasti-prod
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: madrasti
+      POSTGRES_USER: madrasti
+      POSTGRES_PASSWORD: ${MADRASTI_DB_PASSWORD:?Définissez MADRASTI_DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U madrasti -d madrasti"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    deploy:
+      # Plusieurs instances : les notifications temps réel passent par Redis.
+      replicas: ${MADRASTI_BACKEND_REPLICAS:-2}
+    environment:
+      MADRASTI_DB_URL: jdbc:postgresql://postgres:5432/madrasti
+      MADRASTI_DB_USER: madrasti
+      MADRASTI_DB_PASSWORD: ${MADRASTI_DB_PASSWORD}
+      MADRASTI_JWT_SECRET: ${MADRASTI_JWT_SECRET:?Définissez MADRASTI_JWT_SECRET (32 caractères minimum)}
+      MADRASTI_CORS_ORIGINS: ${MADRASTI_PUBLIC_URL:-http://localhost:8081}
+      MADRASTI_COOKIE_SECURE: ${MADRASTI_COOKIE_SECURE:-true}
+      MADRASTI_LOGIN_PER_MINUTE: ${MADRASTI_LOGIN_PER_MINUTE:-10}
+      MADRASTI_SEED: ${MADRASTI_SEED:-false}
+      MADRASTI_NOTIFICATIONS_RELAY: redis
+      MADRASTI_REDIS_HOST: redis
+      MADRASTI_REDIS_HEALTH: "true"
+      MADRASTI_SMS_PROVIDER: ${MADRASTI_SMS_PROVIDER:-log}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_FROM: ${TWILIO_FROM:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      MADRASTI_JITSI_URL: ${MADRASTI_JITSI_URL:-https://meet.jit.si}
+      MADRASTI_PUBLIC_URL: ${MADRASTI_PUBLIC_URL:-http://localhost:8081}
+      MADRASTI_PAYMENTS_PROVIDER: ${MADRASTI_PAYMENTS_PROVIDER:-simulated}
+      MADRASTI_PAYMENTS_CURRENCY: ${MADRASTI_PAYMENTS_CURRENCY:-mad}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      CMI_CLIENT_ID: ${CMI_CLIENT_ID:-}
+      CMI_STORE_KEY: ${CMI_STORE_KEY:-}
+      CMI_GATEWAY_URL: ${CMI_GATEWAY_URL:-https://testpayment.cmi.co.ma/fim/est3Dgate}
+    volumes:
+      - uploads:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      BACKEND_URL: http://backend:8080
+      JITSI_ORIGIN: ${MADRASTI_JITSI_URL:-https://meet.jit.si}
+      # Passerelles autorisées à recevoir le formulaire de paiement (CMI) ; ajoutez celle fournie par le CMI si elle diffère.
+      PAYMENT_FORM_ORIGINS: ${MADRASTI_PAYMENT_FORM_ORIGINS:-https://testpayment.cmi.co.ma https://payment.cmi.co.ma}
+    ports:
+      - "${MADRASTI_HTTP_PORT:-8081}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:

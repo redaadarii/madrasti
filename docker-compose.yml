@@ -1,0 +1,22 @@
+name: madrasti
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: madrasti-postgres
+    environment:
+      POSTGRES_DB: madrasti
+      POSTGRES_USER: madrasti
+      POSTGRES_PASSWORD: madrasti
+    ports:
+      - "5432:5432"
+    volumes:
+      - madrasti-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U madrasti -d madrasti"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  madrasti-pgdata:

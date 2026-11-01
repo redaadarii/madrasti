@@ -1,0 +1,12 @@
+# Profil dev : PostgreSQL lancé via `docker compose up -d` à la racine du projet
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/madrasti
+    username: madrasti
+    password: madrasti
+
+madrasti:
+  seed-demo-data: true
+  security:
+    # Tests de bout en bout locaux : plusieurs connexions par minute depuis la même machine.
+    login-per-minute: ${MADRASTI_LOGIN_PER_MINUTE:60}

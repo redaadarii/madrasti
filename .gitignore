@@ -1,0 +1,25 @@
+# Backend
+backend/target/
+*.iml
+.idea/
+
+# Frontend
+node_modules/
+apps/*/dist/
+apps/*/coverage/
+.turbo/
+# Expo
+apps/mobile/.expo/
+apps/mobile/ios/
+apps/mobile/android/
+
+# OS / env
+.DS_Store
+.env
+.env.*
+data/
+!.env.example
+playwright-report/
+test-results/
+
+docs/video/build/

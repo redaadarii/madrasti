@@ -1,0 +1,16 @@
+{
+  "name": "Madrasti — Gestion scolaire 360°",
+  "short_name": "Madrasti",
+  "description": "Vie scolaire, pédagogie, communication et finances pour l'école, les enseignants et les familles.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#1e3a8a",
+  "lang": "fr",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "madrasti",
+  "private": true,
+  "description": "Madrasti — plateforme de gestion scolaire 360° (Spring Boot, React web, React Native / Expo)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "npm@11.6.1",
+  "scripts": {
+    "db": "docker compose up -d --wait",
+    "backend": "mvn -f backend/pom.xml spring-boot:run",
+    "web": "npm run dev -w @madrasti/web",
+    "mobile": "npm run start -w @madrasti/mobile",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "mvn -f backend/pom.xml test && turbo run test:run",
+    "build": "mvn -f backend/pom.xml -DskipTests package && turbo run build --filter=@madrasti/web",
+    "postinstall": "patch-package"
+  },
+  "devDependencies": {
+    "patch-package": "^8.0.1",
+    "turbo": "2.11.10"
+  }
+}
