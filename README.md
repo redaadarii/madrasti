@@ -101,7 +101,7 @@ narration voix française macOS, montage AVFoundation → `madrasti-presentation
 |---|---|---|---|
 | ![Connexion mobile](docs/screenshots/mobile-01-connexion.png) | ![Accueil mobile](docs/screenshots/mobile-02-accueil.png) | ![Résultats mobile](docs/screenshots/mobile-03-resultats.png) | ![Mobile en arabe](docs/screenshots/mobile-04-arabe.png) |
 
-## 🏗️ Architecture
+## 🧱 Architecture
 
 ```mermaid
 flowchart LR
